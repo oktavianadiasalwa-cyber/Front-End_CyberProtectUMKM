@@ -1,44 +1,39 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
-// 1. Halaman Utama Pilihan (Welcome)
+/*
+|--------------------------------------------------------------------------
+| 1. HALAMAN UTAMA & GERBANG MASUK
+|--------------------------------------------------------------------------
+*/
+
+// Halaman Landing Utama (Pilihan masuk Admin / User)
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing'); 
 });
 
-// 2. Tampilan Halaman Login User
-Route::get('/login-user', function () {
-    return view('login-user');
-})->name('login.user');
 
-// 3. Proses Validasi Login ke Database
-Route::post('/login-user', function (Request $request) {
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+/*
+|--------------------------------------------------------------------------
+| 2. JALUR AUTENTIKASI & FITUR ADMIN (BAGIAN ADMIN - NADIA FE)
+|--------------------------------------------------------------------------
+*/
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        return redirect()->intended('dashboard');
-    }
+// Login Admin
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
 
-    return back()->withErrors([
-        'email' => 'Email atau Kata Sandi yang Anda masukkan salah.',
-    ]);
-});
-
-// 4. Tampilan Halaman Register (Daftar Akun)
+// Register Admin
 Route::get('/register', function () {
     return view('register');
 })->name('register');
 
-// 5. Proses Menyimpan Akun Baru ke Database
 Route::post('/register', function (Request $request) {
     $request->validate([
         'name' => ['required', 'string', 'max:255'],
@@ -54,50 +49,89 @@ Route::post('/register', function (Request $request) {
 
     Auth::login($user);
 
-    return redirect('/dashboard');
+    // FIX: Admin dilempar ke halaman admin-dashboard milikmu
+    return redirect('/admin-dashboard'); 
 });
 
-// 6. Halaman Dashboard (Hanya bisa masuk jika sudah login)
-Route::get('/dashboard', function () {
-    if (!Auth::check()) {
-        return redirect('/login-user');
-    }
-    return view('dashboard'); // Membuka file dashboard.blade.php kamu
+// Halaman-Halaman Admin UI milikmu
+Route::get('/admin-dashboard', function () {
+    return view('admin-dashboard'); // Sesuai dengan file admin-dashboard.blade.php kamu
 })->name('dashboard');
 
-// 7. Proses Keluar Sistem (Logout) untuk Menghapus Sesi Login
+Route::get('/ringkasan-keamanan', function () {
+    return view('ringkasan-keamanan');
+})->name('ringkasan-keamanan');
+
+Route::get('/manajemen-karyawan', function () {
+    return view('manajemen-karyawan');
+})->name('manajemen-karyawan');
+
+Route::get('/rule-based', function () {
+    return view('rule-based');
+})->name('rule-based');
+
+Route::get('/profil', function () {
+    return view('profil');
+})->name('profil');
+
+
+/*
+|--------------------------------------------------------------------------
+| 3. JALUR AUTENTIKASI & FITUR USER / KASIR (BAGIAN USER - DHEA FE)
+|--------------------------------------------------------------------------
+*/
+
+// Login User
+Route::get('/login-user', function () {
+    return view('login-user');
+})->name('login.user');
+
+Route::post('/login-user', function (Request $request) {
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        // FIX: User diarahkan ke halaman POS (Fitur utama User), bukan dashboard Admin
+        return redirect()->intended('/pos'); 
+    }
+
+    return back()->withErrors([
+        'email' => 'Email atau Kata Sandi yang Anda masukkan salah.',
+    ]);
+});
+
+// Halaman Fitur User
+Route::get('/pos', function () {
+    if (!Auth::check()) { return redirect('/login-user'); }
+    return view('pos');
+})->name('pos');
+
+Route::get('/history', function () {
+    if (!Auth::check()) { return redirect('/login-user'); }
+    return view('history');
+})->name('history');
+
+Route::get('/profile', function () {
+    if (!Auth::check()) { return redirect('/login-user'); }
+    return view('profile'); 
+})->name('profile');
+
+Route::post('/profile/update', function (Request $request) {
+    return back()->with('success', 'Profil berhasil diperbarui!');
+})->name('profile.update');
+
+
+/*
+|--------------------------------------------------------------------------
+| 4. LOGOUT (PROSES KELUAR SISTEM)
+|--------------------------------------------------------------------------
+*/
 Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect('/login-user');
+    return redirect('/'); 
 })->name('logout');
-
-// 8. Halaman Layanan Kasir (POS)
-Route::get('/pos', function () {
-    if (!Auth::check()) {
-        return redirect('/login-user');
-    }
-    return view('pos');
-})->name('pos');
-
-// 9. Halaman Riwayat Transaksi (History)
-Route::get('/history', function () {
-    if (!Auth::check()) {
-        return redirect('/login-user');
-    }
-    return view('history');
-})->name('history');
-
-// 10. Halaman Profil User
-Route::get('/profile', function () {
-    if (!Auth::check()) {
-        return redirect('/login-user');
-    }
-    return view('profile'); // Membuka file profile.blade.php kamu
-})->name('profile');
-
-// 11. Route Proses Simpan Perubahan Profil (Biar Gak Error Merah)
-Route::post('/profile/update', function (Request $request) {
-    return back()->with('success', 'Profil berhasil diperbarui!');
-})->name('profile.update');

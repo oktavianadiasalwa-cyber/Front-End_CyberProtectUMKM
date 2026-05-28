@@ -37,8 +37,8 @@
                     <i class="fa-solid fa-user text-white"></i>
                 </div>
                 <div class="overflow-hidden flex-1">
-                    <p class="text-xs font-bold truncate text-white group-hover:text-blue-400 transition-colors">{{ Auth::user()->name }}</p>
-                    <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
+                    <p class="text-xs font-bold truncate text-white group-hover:text-blue-400 transition-colors">{{ Auth::user()->name ?? 'User Name' }}</p>
+                    <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                 </div>
             </a>
         </div>
@@ -50,14 +50,14 @@
             
             <div class="relative inline-block text-left">
                 <button id="profile-menu-btn" class="flex items-center gap-2 focus:outline-none cursor-pointer">
-                    <span class="text-sm font-bold text-gray-700">{{ Auth::user()->name }}</span>
+                    <span class="text-sm font-bold text-gray-700">{{ Auth::user()->name ?? 'User Name' }}</span>
                     <i class="fa-solid fa-circle-user text-2xl text-gray-600"></i>
                 </button>
                 
                 <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-72 bg-white rounded-[24px] shadow-2xl border border-gray-100 p-6 z-50 transform origin-top-right transition-all">
                     <div class="mb-4">
-                        <h4 class="text-xl font-bold text-gray-800 leading-tight">{{ Auth::user()->name }}</h4>
-                        <p class="text-sm text-gray-400 mt-0.5">{{ Auth::user()->email }}</p>
+                        <h4 class="text-xl font-bold text-gray-800 leading-tight">{{ Auth::user()->name ?? 'User Name' }}</h4>
+                        <p class="text-sm text-gray-400 mt-0.5">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                     </div>
                     
                     <hr class="border-gray-100 my-3">
@@ -78,7 +78,7 @@
 
         <header class="grid grid-cols-3 gap-6 mb-8 items-stretch">
             <div class="col-span-2 bg-[#00224F] text-white p-6 rounded-[16px] shadow-sm flex flex-col justify-center gap-3">
-                <h2 class="text-xl font-bold tracking-wide">Halo {{ Auth::user()->name }}, Selamat Bekerja !</h2>
+                <h2 class="text-xl font-bold tracking-wide">Halo {{ Auth::user()->name ?? 'User' }}, Selamat Bekerja !</h2>
                 <div class="flex items-center gap-2 bg-white/10 w-fit px-3 py-1.5 rounded-lg border border-white/5">
                     <i class="fa-solid fa-user-clock text-xs opacity-80"></i>
                     <span class="text-xs font-medium tracking-wide opacity-90">Shift Pagi: 08:00 - 16:00</span>
