@@ -15,23 +15,25 @@
             <h1 class="text-2xl font-bold text-blue-900 leading-tight text-left">CyberProtect<br>UMKM</h1>
         </div>
 
-        <form id="registerForm" action="/login" method="GET" onsubmit="return validatePassword(event)">
+        <form id="registerForm" action="/register" method="POST" onsubmit="return validatePassword(event)">
+            @csrf 
+
             <div class="mb-4">
                 <label class="block text-sm font-bold text-gray-700 mb-1">Nama UMKM</label>
-                <input type="text" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <input type="text" name="name" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-bold text-gray-700 mb-1">Email</label>
-                <input type="email" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <input type="email" name="email" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-bold text-gray-700 mb-1">Kata Sandi</label>
                 <div class="relative">
-                    <input type="password" id="reg_password" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 pr-10">
+                    <input type="password" id="reg_password" name="password" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 pr-10">
                     <button type="button" onclick="togglePassword('reg_password', 'eyeIconReg')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none">
-                    </button>
+                        <i id="eyeIconReg" class="fa-solid fa-eye"></i> </button>
                 </div>
             </div>
 
@@ -40,7 +42,7 @@
                 <div class="relative">
                     <input type="password" id="reg_password_confirm" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 pr-10">
                     <button type="button" onclick="togglePassword('reg_password_confirm', 'eyeIconConfirm')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none">
-                    </button>
+                        <i id="eyeIconConfirm" class="fa-solid fa-eye"></i> </button>
                 </div>
                 <p id="errorText" class="text-red-500 text-xs font-semibold mt-1 hidden">Konfirmasi kata sandi tidak sesuai!</p>
             </div>
@@ -95,13 +97,11 @@
                 event.preventDefault(); // Mencegah form tersubmit
                 errorText.classList.remove('hidden');
                 
-                // Alert popup sebagai peringatan tambahan
                 alert('Peringatan: Konfirmasi kata sandi harus sama dengan kata sandi awal!');
                 return false;
             }
             errorText.classList.add('hidden');
             return true;
-            // Jika validasi lolos, form akan otomatis submit ke route '/login' 
         }
     </script>
 </body>

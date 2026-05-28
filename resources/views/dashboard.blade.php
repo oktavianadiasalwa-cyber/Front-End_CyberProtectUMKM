@@ -1,282 +1,253 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaksi & Fraud - CyberProtect</title>
+    <title>Dashboard - CyberProtect UMKM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Memperbaiki dropdown yang terpotong */
-        .overflow-hidden { overflow: visible !important; }
-    </style>
 </head>
-<body class="bg-gray-50 flex items-stretch h-screen text-sm overflow-hidden">
+<body class="bg-[#EBEBEB] flex min-h-screen font-sans">
 
-    <aside class="w-64 bg-[#0B2046] text-white flex flex-col justify-between">
+    <aside class="w-64 bg-[#010915] text-white flex flex-col justify-between p-6">
         <div>
-            <div class="p-6 flex items-center gap-2">
-                <i class="fa-solid fa-shield-halved text-2xl"></i>
-                <h1 class="font-bold leading-tight">CyberProtect<br>UMKM</h1>
+            <div class="flex items-center gap-3 mb-12">
+                <i class="fa-solid fa-shield-halved text-blue-500 text-2xl"></i>
+                <h1 class="text-lg font-bold leading-none uppercase tracking-wider">
+                    CyberProtect<br><span class="text-[10px] font-black opacity-80">UMKM</span>
+                </h1>
             </div>
-            <nav class="flex flex-col gap-2 px-4 mt-4">
-                <a href="{{ route('dashboard') }}" class="py-2 hover:text-gray-300 {{ Route::is('dashboard') ? 'font-bold underline' : '' }}">
-                    Transaksi & Fraud
-                </a>
 
-                <a href="{{ route('ringkasan-keamanan') }}" class="py-2 hover:text-gray-300 {{ Route::is('ringkasan-keamanan') ? 'font-bold underline' : '' }}">
-                    Ringkasan Keamanan & Log Aktivitas Login
+            <nav class="space-y-4">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-4 text-blue-400 bg-blue-500/10 p-3 rounded-xl font-semibold">
+                    <i class="fa-solid fa-house"></i> Dashboard
                 </a>
-
-                <a href="{{ route('manajemen-karyawan') }}" class="py-2 hover:text-gray-300 {{ Route::is('manajemen-karyawan') ? 'font-bold underline' : '' }}">
-                    Manajemen Karyawan
+                <a href="{{ route('pos') }}" class="flex items-center gap-4 text-gray-400 hover:text-white p-3 transition-all">
+                    <i class="fa-solid fa-desktop"></i> POS
                 </a>
-
-                <a href="{{ route('rule-based') }}" class="py-2 hover:text-gray-300 {{ Route::is('rule-based') ? 'font-bold underline' : '' }}">
-                    Rule Based System
+                <a href="{{ route('history') }}" class="flex items-center gap-4 text-gray-400 hover:text-white p-3 transition-all">
+                    <i class="fa-solid fa-clock-rotate-left"></i> History
                 </a>
             </nav>
         </div>
-        <div class="p-6">
-            <a href="{{ route('profil') }}" class="font-bold"><i class="fa-solid fa-user mr-2"></i> Profil</a>
+
+        <div class="border-t border-gray-800 pt-6 flex flex-col gap-4">
+            <a href="{{ route('profile') }}" class="flex items-center gap-3 hover:bg-white/5 p-2 rounded-xl transition-all group">
+                <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-gray-600 transition-colors">
+                    <i class="fa-solid fa-user text-white"></i>
+                </div>
+                <div class="overflow-hidden flex-1">
+                    <p class="text-xs font-bold truncate text-white group-hover:text-blue-400 transition-colors">{{ Auth::user()->name ?? 'User Name' }}</p>
+                    <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
+                </div>
+            </a>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative">
-        <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10">
-            <h2 class="text-2xl font-bold text-[#0B2046]">Transaksi & Fraud</h2>
+    <main class="flex-1 p-8">
+        <div class="flex justify-end items-center gap-6 mb-4">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
             
-            <div class="flex items-center gap-4 relative">
-                <button onclick="toggleElement('profilePopup')" class="flex items-center gap-2 font-semibold">
-                    <div class="w-8 h-8 rounded-full bg-gray-300 overflow-hidden"></div>
-                    {{ auth()->user()->name ?? 'Username' }}
+            <div class="relative inline-block text-left">
+                <button id="profile-menu-btn" class="flex items-center gap-2 focus:outline-none cursor-pointer">
+                    <span class="text-sm font-bold text-gray-700">{{ Auth::user()->name ?? 'User Name' }}</span>
+                    <i class="fa-solid fa-circle-user text-2xl text-gray-600"></i>
                 </button>
                 
-                <button onclick="toggleElement('notifPopup')"><i class="fa-regular fa-bell text-lg"></i></button>
-
-                <div id="profilePopup" class="hidden absolute top-12 right-10 w-48 bg-white border border-gray-200 shadow-lg rounded-xl p-4 text-center z-50">
-                    <div class="flex items-center gap-2 font-bold mb-3 border-b pb-2">
-                        <i class="fa-solid fa-user text-gray-400 text-xl"></i>
-                        {{ auth()->user()->name ?? 'USERNAME' }}
+                <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-72 bg-white rounded-[24px] shadow-2xl border border-gray-100 p-6 z-50 transform origin-top-right transition-all">
+                    <div class="mb-4">
+                        <h4 class="text-xl font-bold text-gray-800 leading-tight">{{ Auth::user()->name ?? 'User Name' }}</h4>
+                        <p class="text-sm text-gray-400 mt-0.5">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                     </div>
-                    <a href="/login" class="block w-full bg-[#0B2046] text-white rounded py-2 text-center text-xs font-bold hover:bg-slate-800">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i> LOG OUT
-                    </a>
-                </div>
-
-                <div id="notifPopup" class="hidden absolute top-12 right-0 w-80 bg-white border border-gray-200 shadow-xl rounded-xl p-4 z-50">
-                    <h3 class="font-bold text-center mb-3 text-base">Semua Notifikasi Keamanan</h3>
-                    <div class="space-y-2 max-h-64 overflow-y-auto">
-                        <div class="border border-blue-300 bg-blue-50 p-2 rounded flex gap-2">
-                            <i class="fa-solid fa-circle-info text-blue-500 mt-1"></i>
-                            <div>
-                                <p class="font-bold text-xs"><span class="bg-blue-200 text-blue-800 px-1 rounded text-[10px]">INFO</span> Update Sistem</p>
-                                <p class="text-xs text-gray-600">Sistem mengirim notifikasi tentang update...</p>
-                            </div>
-                        </div>
+                    
+                    <hr class="border-gray-100 my-3">
+                    
+                    <div class="flex flex-col gap-1">
+                        <a href="{{ route('profile') }}" class="flex items-center gap-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 transition-colors group">
+                            <i class="fa-solid fa-user-gear text-xl text-gray-400 group-hover:text-gray-600 transition-colors w-6 text-center"></i> 
+                            Pengaturan Profil
+                        </a>
+                        <button id="open-logout-modal-btn" type="button" class="w-full flex items-center gap-4 py-3 text-base font-bold text-[#EA4335] hover:text-red-700 transition-colors group text-left bg-transparent border-none cursor-pointer">
+                            <i class="fa-solid fa-right-from-bracket text-xl text-[#EA4335] w-6 text-center"></i> 
+                            Keluar Sistem
+                        </button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <header class="grid grid-cols-3 gap-6 mb-8 items-stretch">
+            <div class="col-span-2 bg-[#00224F] text-white p-6 rounded-[16px] shadow-sm flex flex-col justify-center gap-3">
+                <h2 class="text-xl font-bold tracking-wide">Halo {{ Auth::user()->name ?? 'User' }}, Selamat Bekerja !</h2>
+                <div class="flex items-center gap-2 bg-white/10 w-fit px-3 py-1.5 rounded-lg border border-white/5">
+                    <i class="fa-solid fa-user-clock text-xs opacity-80"></i>
+                    <span class="text-xs font-medium tracking-wide opacity-90">Shift Pagi: 08:00 - 16:00</span>
+                </div>
+            </div>
+            
+            <div class="bg-[#EAEAEA] text-gray-800 p-6 rounded-[16px] flex flex-col items-center justify-center border border-gray-300/40 shadow-sm text-center">
+                <i class="fa-regular fa-clock text-xl text-gray-700 mb-2"></i>
+                <p id="current-time" class="text-3xl font-black tracking-tight text-gray-900 leading-none">09:10:45</p>
+                <p id="current-day" class="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-2">WAKTU LOKAL TERMINAL : ...</p>
             </div>
         </header>
 
-        <div class="p-6 overflow-y-auto flex-1 bg-gray-50">
-            <div id="viewTable">
-                <div class="flex gap-4 mb-6 bg-white p-3 border rounded-xl shadow-sm justify-center max-w-4xl mx-auto">
-                    <input type="text" placeholder="Nama Kasir atau ID..." class="border rounded px-3 py-1 text-xs w-48">
-                    <input type="date" class="border rounded px-3 py-1 text-xs w-40">
-                    <select id="statusFilter" onchange="filterTable()" class="border rounded px-3 py-1 text-xs w-40">
-                        <option value="all">Semua Status</option>
-                        <option value="SUKSES">Sukses</option>
-                        <option value="MENCURIGAKAN">Mencurigakan</option>
-                    </select>
-                    <button class="bg-teal-700 text-white px-4 py-1 rounded text-xs font-bold"><i class="fa-solid fa-filter"></i> TERAPKAN FILTER</button>
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-[16px] shadow-sm flex items-center gap-6 border border-gray-100">
+                <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-receipt"></i>
                 </div>
-
-                <div class="bg-white border rounded-xl shadow-sm overflow-hidden mb-6">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-gray-50 text-black-500 text-xl font-bold uppercase border-b">
-                            <tr>
-                                <th class="p-3">LOGIN KARYAWAN</th>
-                            </tr>
-                        </thead>
-                        <thead class="bg-gray-50 text-gray-500 font-bold uppercase border-b">
-                            <tr>
-                                <th class="p-3">ID Transaksi</th>
-                                <th class="p-3">Nama User</th>
-                                <th class="p-3">Jumlah (Rp)</th>
-                                <th class="p-3">Tanggal/Waktu</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3 text-center">Tindakan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b data-row" data-status="MENCURIGAKAN"> 
-                                <td class="p-3">#TRX-8829-01</td>
-                                <td class="p-3 font-bold"><i class="fa-solid fa-circle-user"></i> Andi Darmawan</td>
-                                <td class="p-3 text-red-600 font-bold">Rp 300.000</td>
-                                <td class="p-3 text-gray-500">24 Okt 2023, 14:22</td>
-                                <td class="p-3 relative">
-                                    <button onclick="toggleElement('statusPop1')" class="bg-red-200 text-red-700 px-2 py-1 rounded-full font-bold text-[10px]">&bull; MENCURIGAKAN</button>
-                                    <div id="statusPop1" class="hidden absolute bg-white border shadow p-1 rounded mt-1 z-10 w-32">
-                                        <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-green-600 font-bold text-xs">Sukses</button>
-                                        <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-red-600 font-bold text-xs">Mencurigakan</button>
-                                    </div>
-                                </td>
-                                <td class="p-3 flex items-center justify-center gap-2" id="action-1">
-                                    <button onclick="switchView('viewInvoice')" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-eye"></i></button>
-                                    <button onclick="verifikasiAction('action-1')" class="bg-green-600 text-white px-2 py-1 rounded font-bold text-[10px]">SETUJUI</button>
-                                    <button onclick="verifikasiAction('action-1')" class="bg-red-500 text-white px-2 py-1 rounded font-bold text-[10px]">TOLAK</button>
-                                </td>
-                            </tr>
-                            <tr class="border-b data-row" data-status="SUKSES"> 
-                                <td class="p-3">#TRX-8089-01</td>
-                                <td class="p-3 font-bold"><i class="fa-solid fa-circle-user"></i> Aysa Andrian</td>
-                                <td class="p-3 text-gray-600 font-bold"> Rp 50.000</td>
-                                <td class="p-3 text-gray-500">24 Okt 2023, 14:22</td>
-                                <td class="p-3">
-                                    <span class="bg-green-200 text-green-700 px-2 py-1 rounded-full font-bold text-[10px]">&bull; SUKSES</span>
-                                </td>
-                                <td class="p-3 flex items-center justify-center gap-2">
-                                    <button onclick="switchView('viewInvoice')" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-eye"></i></button>
-                                    <span class="text-gray-500 font-bold text-[10px]">AMAN</span> 
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-               <div id="statsCards" class="grid grid-cols-4 gap-4 mb-6">
-                <div class="bg-white p-4 border rounded-xl shadow-sm text-center">
-                    <p class="text-xs font-bold text-gray-500">JUMLAH SUKSES <i class="fa-solid fa-circle-check text-green-500"></i></p>
-                    <p class="text-3xl font-bold mt-2">124 <span class="text-xs text-green-500">&uarr; 8%</span></p>
-                </div>
-                <div class="bg-white p-4 border rounded-xl shadow-sm text-center">
-                    <p class="text-xs font-bold text-gray-500">TRANSAKSI MENCURIGAKAN <i class="fa-solid fa-triangle-exclamation text-red-500"></i></p>
-                    <p class="text-3xl font-bold mt-2">12 <span class="text-xs text-red-500">&darr; 2%</span></p>
-                </div>
-                <div class="bg-white p-4 border rounded-xl shadow-sm text-center">
-                    <p class="text-xs font-bold text-gray-500">STATUS KEAMANAN SISTEM <i class="fa-solid fa-shield-halved text-green-500"></i></p>
-                    <p class="text-2xl font-bold text-green-500 mt-2">Sistem Aman/Normal <span class="text-xs text-green-500">&uarr; 100%</span></p>
-                </div>
-                <div class="bg-white p-4 border rounded-xl shadow-sm text-center">
-                    <p class="text-xs font-bold text-gray-500">TOTAL OMZET HARI INI <i class="fa-solid fa-coins text-blue-500"></i></p>
-                    <p class="text-xl font-bold mt-2">Rp 7.000.000 <span class="text-xs text-blue-500">&uarr; 2%</span></p>
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Transaksi</p>
+                    <p class="text-3xl font-black text-[#010915]">150</p>
                 </div>
             </div>
+            <div class="bg-white p-6 rounded-[16px] shadow-sm flex items-center gap-6 border border-gray-100">
+                <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Omzet</p>
+                    <p class="text-3xl font-black text-[#010915]">Rp 3.500.000</p>
+                </div>
             </div>
+        </div>
 
-            <div id="viewInvoice" class="hidden">
-                <button onclick="switchView('viewTable')" class="font-bold text-lg mb-4 hover:text-blue-700">
-                    <i class="fa-solid fa-angle-left"></i> Kembali
-                </button>
-                <div class="bg-white border-2 border-blue-400 p-8 rounded-xl shadow-sm max-w-4xl mx-auto">
-                    <div class="flex justify-between items-start border-b pb-6 mb-6">
-                        <div class="flex gap-2">
-                            <i class="fa-solid fa-store text-2xl text-blue-800"></i>
-                            <div>
-                                <h3 class="font-bold text-blue-900 text-lg">Alneyra Coffe</h3>
-                                <p class="text-xs text-gray-500">Jl. Sudirman No.123... <br> Telp: (021) 555-0192</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold text-xs">INVOICE</span>
-                            <p class="text-xs mt-2 text-gray-500">ID Transaksi<br>#TRX-882910</p>
-                        </div>
-                    </div>
-                    <div class="bg-gray-100 p-6 rounded-lg mb-6">
-                    <div class="grid grid-cols-4 gap-4">
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase">Tanggal</p>
-                            <p class="font-bold">24 Okt 2025</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase">Kasir</p>
-                            <p class="font-bold">Andi Darmawan</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase">Metode Bayar</p>
-                            <p class="font-bold"><i class="fa-solid fa-qrcode"></i> QRIS</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-bold uppercase">Status</p>
-                            <span class="bg-blue-200 text-blue-700 px-3 py-1 rounded text-xs font-bold">Selesai</span>
-                        </div>
-                    </div>
+        <div class="bg-white p-8 rounded-[24px] shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="font-bold text-gray-800 tracking-wide">Performa Penjualan Jam Terakhir</h3>
+                <div class="flex bg-gray-100 p-1 rounded-xl gap-1">
+                    <button class="px-4 py-1.5 text-xs font-bold rounded-lg bg-white shadow-sm text-gray-800">Harian</button>
+                    <button class="px-4 py-1.5 text-xs font-bold text-gray-400 hover:text-gray-600">Mingguan</button>
                 </div>
-                <table class="w-full text-left mb-6">
-                    <thead>
-                        <tr class="text-gray-500 border-b text-xs uppercase">
-                            <th class="py-2">Item</th>
-                            <th class="py-2 text-right">Harga Satuan</th>
-                            <th class="py-2 text-center">Qty</th>
-                            <th class="py-2 text-right">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm">
-                        <tr class="border-b">
-                            <td class="py-3 font-bold">Chocolate Cake</td>
-                            <td class="py-3 text-right">Rp 15.000</td>
-                            <td class="py-3 text-center">1</td>
-                            <td class="py-3 text-right">Rp 15.000</td>
-                        </tr>
-                        </tbody>
-                </table>
-                <table class="w-full text-left mb-6">
-                    <tbody class="text-sm">
-                        <tr class="border-b">
-                            <td class="py-3 font-bold">Brown Sugar Latte</td>
-                            <td class="py-3 text-right">Rp 20.000</td>
-                            <td class="py-3 text-center">2</td>
-                            <td class="py-3 text-right">Rp 40.000</td>
-                        </tr>
-                        </tbody>
-                </table>
-                <div class="flex justify-end">
-                    <div class="w-64 space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span>Subtotal</span>
-                            <span class="font-bold">Rp 55.000</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span>PPN (10%)</span>
-                            <span class="font-bold">Rp 5.500</span>
-                        </div>
-                        <div class="flex justify-between text-lg border-t pt-2 font-bold">
-                            <span>Total</span>
-                            <span>Rp 60.500</span>
-                        </div>
-                    </div>
+            </div>
+            
+            <div class="flex items-end justify-center gap-12 h-44 px-4 border-b border-gray-200 pb-1">
+                <div class="flex flex-col items-center gap-2 w-12">
+                    <div class="w-full bg-gray-200 rounded-t-md h-16 transition-all hover:bg-slate-300"></div>
                 </div>
+                <div class="flex flex-col items-center gap-2 w-12">
+                    <div class="w-full bg-gray-200 rounded-t-md h-24 transition-all hover:bg-slate-300"></div>
                 </div>
+                <div class="flex flex-col items-center gap-2 w-12">
+                    <div class="w-full bg-[#00224F] rounded-t-md h-36 transition-all hover:bg-opacity-95"></div>
+                </div>
+                <div class="flex flex-col items-center gap-2 w-12">
+                    <div class="w-full bg-gray-200 rounded-t-md h-20 transition-all hover:bg-slate-300"></div>
+                </div>
+                <div class="flex flex-col items-center gap-2 w-12">
+                    <div class="w-full bg-gray-200 rounded-t-md h-28 transition-all hover:bg-slate-300"></div>
+                </div>
+                <div class="flex flex-col items-center gap-2 w-12">
+                    <div class="w-full bg-gray-200 rounded-t-md h-12 transition-all hover:bg-slate-300"></div>
+                </div>
+                <div class="flex flex-col items-center gap-2 w-12">
+                    <div class="w-full bg-gray-200 rounded-t-md h-24 transition-all hover:bg-slate-300"></div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center gap-12 px-4 pt-3 text-[11px] font-bold text-gray-400 tracking-wide">
+                <span class="w-12 text-center">09:00</span>
+                <span class="w-12 text-center">11:00</span>
+                <span class="w-12 text-center">13:00</span>
+                <span class="w-12 text-center">15:00</span>
+                <span class="w-12 text-center">17:00</span>
+                <span class="w-12 text-center">19:00</span>
+                <span class="w-12 text-center text-gray-600 font-extrabold">Sekarang</span>
             </div>
         </div>
     </main>
 
+    <div id="logout-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white rounded-[32px] shadow-2xl w-[90%] max-w-[420px] p-8 text-center border border-gray-100 transform scale-95 opacity-0 transition-all duration-300 dynamic-modal-card">
+            <h3 class="text-lg font-bold text-gray-900 tracking-wide mb-6">Konfirmasi Log Out</h3>
+            <div class="flex justify-center mb-6">
+                <div class="w-24 h-24 rounded-2xl bg-gray-50 border-2 border-gray-100 flex items-center justify-center text-gray-800">
+                    <i class="fa-solid fa-right-from-bracket text-4xl"></i>
+                </div>
+            </div>
+            <p class="text-sm font-medium text-gray-600 leading-relaxed px-4 mb-8">
+                Apakah Anda yakin ingin keluar dari <br><span class="font-bold text-gray-900">CyberProtect UMKM</span>?
+            </p>
+            <div class="flex flex-col gap-3 w-full px-2">
+                <form action="{{ route('logout') }}" method="POST" class="w-full">
+                    @csrf
+                    <button type="submit" class="w-full bg-[#091E42] text-white text-xs font-bold py-3.5 rounded-full hover:bg-slate-800 transition-all uppercase tracking-wide cursor-pointer">
+                        YA, LOG OUT
+                    </button>
+                </form>
+                <button type="button" id="close-logout-modal-btn" class="w-full bg-[#8A8A8A] text-white text-xs font-bold py-3.5 rounded-full hover:bg-gray-500 transition-all uppercase tracking-wide cursor-pointer">
+                    TIDAK, KEMBALI
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function toggleElement(id) {
-            document.getElementById(id).classList.toggle('hidden');
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour12: false });
+            document.getElementById('current-time').innerText = timeStr;
+            const days = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
+            const dayName = days[now.getDay()];
+            document.getElementById('current-day').innerText = "WAKTU LOKAL TERMINAL : " + dayName;
         }
+        setInterval(updateTime, 1000);
+        updateTime();
 
-        function switchView(targetId) {
-            document.getElementById('viewTable').classList.add('hidden');
-            document.getElementById('viewInvoice').classList.add('hidden');
-            document.getElementById(targetId).classList.remove('hidden');
-        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const logoutModal = document.getElementById('logout-modal');
+            const openModalBtn = document.getElementById('open-logout-modal-btn');
+            const closeModalBtn = document.getElementById('close-logout-modal-btn');
+            const modalCard = logoutModal ? logoutModal.querySelector('.dynamic-modal-card') : null;
 
-        function filterTable() {
-            const filter = document.getElementById('statusFilter').value;
-            const rows = document.querySelectorAll('.data-row');
-            rows.forEach(row => {
-                row.style.display = (filter === 'all' || row.getAttribute('data-status') === filter) ? '' : 'none';
-            });
-        }
+            const profileMenuBtn = document.getElementById('profile-menu-btn');
+            const profileDropdown = document.getElementById('profile-dropdown');
 
-        function verifikasiAction(containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = `
-                <button onclick="switchView('viewInvoice')" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-eye"></i></button>
-                <span class="text-gray-400 font-bold text-[10px] ml-2">SUDAH DIVERIFIKASI</span>
-            `;
-        }
+            if (profileMenuBtn && profileDropdown) {
+                profileMenuBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!profileMenuBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            if (openModalBtn && logoutModal && closeModalBtn) {
+                openModalBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (profileDropdown) profileDropdown.classList.add('hidden');
+                    logoutModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        if (modalCard) {
+                            modalCard.classList.remove('scale-95', 'opacity-0');
+                            modalCard.classList.add('scale-100', 'opacity-100');
+                        }
+                    }, 10);
+                });
+
+                function closeModal() {
+                    if (modalCard) {
+                        modalCard.classList.remove('scale-100', 'opacity-100');
+                        modalCard.classList.add('scale-95', 'opacity-0');
+                    }
+                    setTimeout(() => {
+                        logoutModal.classList.add('hidden');
+                    }, 300);
+                }
+
+                closeModalBtn.addEventListener('click', closeModal);
+                logoutModal.addEventListener('click', (e) => {
+                    if (e.target === logoutModal) {
+                        closeModal();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

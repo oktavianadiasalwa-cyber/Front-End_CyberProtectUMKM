@@ -18,11 +18,11 @@
         <h2 class="text-xl font-bold text-gray-900 mb-12">Level Up Bisnis Anda dengan<br>Perlindungan Digital Berkelas</h2>
 
         <div class="space-y-4">
-            <button onclick="alert('Fitur masuk sebagai user sedang dinonaktifkan.')" class="w-full bg-[#0d6efd] hover:bg-blue-600 text-white font-bold py-3 px-4 rounded shadow">
+            <a href="{{ route('login.user') }}" class="w-full block bg-[#0d6efd] hover:bg-blue-600 text-white font-bold py-3 px-4 rounded shadow text-center">
                 MASUK SEBAGAI USER
-            </button>
+            </a>
             
-            <a href="/login" class="w-full block bg-[#0B2046] hover:bg-slate-800 text-white font-bold py-3 px-4 rounded shadow">
+            <a href="{{ route('login') }}" class="w-full block bg-[#0B2046] hover:bg-slate-800 text-white font-bold py-3 px-4 rounded shadow text-center">
                 MASUK SEBAGAI ADMIN
             </a>
         </div>
